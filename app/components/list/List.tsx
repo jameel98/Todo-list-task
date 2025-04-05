@@ -1,61 +1,47 @@
 import { useState } from "react";
 import styles from "./list.module.css"; 
+import { TaskStatus, Task, TodoListProps } from "@/app/types/todoInterfaces";
 
-type TodoStatus = "notStarted" | "inProgress" | "completed";
-
-interface Todo {
-  id: string;
-  title: string;
-  description: string;
-  stat: TodoStatus;
-}
-
-interface TodoListProps {
-  todos: Todo[];
-  onDelete: (id: string) => void;
-  onUpdate: (updatedTodo: Todo) => void;
-}
-
-export default function TodoList({ todos, onDelete, onUpdate }: TodoListProps) {
+export default function TodoList({ tasks, onDelete, onUpdate }: TodoListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedTodo, setEditedTodo] = useState<Partial<Todo>>({});
+  const [editedTask, setEditedTask] = useState<Partial<Task>>({});
 
-  const handleEdit = (todo: Todo) => {
-    setEditingId(todo.id);
-    setEditedTodo({ ...todo });
+  const handleEdit = (task: Task) => {
+    setEditingId(task.id);
+    setEditedTask({ ...task });
   };
 
   const handleSave = () => {
-    if (editingId && editedTodo.title && editedTodo.description && editedTodo.stat) {
-      onUpdate(editedTodo as Todo);
+    if (editingId && editedTask.title && editedTask.description && editedTask.stat) {
+      onUpdate(editedTask as Task);
       setEditingId(null);
-      setEditedTodo({});
+      setEditedTask({});
     }
   };
 
   return (
     <div className={styles.todoList}>
-      {todos.map((todo) => {
-        const isEditing = editingId === todo.id;
+      {tasks.map((task) => {
+        const isEditing = editingId === task.id;
 
         return (
-          <div key={todo.id} className={`${styles.todoItem} ${todo.stat === "completed" ? styles.completed : ""}`}>
+          <div key={task.id} className={`${styles.todoItem} ${task.stat === "completed" ? styles.completed : ""}`}>
             {isEditing ? (
               <div className={styles.editForm}>
                 <input
-                  value={editedTodo.title || ""}
-                  onChange={(e) => setEditedTodo({ ...editedTodo, title: e.target.value })}
+                  value={editedTask.title || ""}
+                  onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
                   placeholder="Title"
                 />
                 <textarea
-                  value={editedTodo.description || ""}
-                  onChange={(e) => setEditedTodo({ ...editedTodo, description: e.target.value })}
+                  value={editedTask.description || ""}
+                  onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
                   placeholder="Description"
                 />
                 <select
-                  value={editedTodo.stat}
+                  value={editedTask.stat}
                   onChange={(e) =>
-                    setEditedTodo({ ...editedTodo, stat: e.target.value as TodoStatus })
+                    setEditedTask({ ...editedTask, stat: e.target.value as TaskStatus })
                   }
                 >
                   <option value="notStarted">Not Started</option>
@@ -69,13 +55,13 @@ export default function TodoList({ todos, onDelete, onUpdate }: TodoListProps) {
             ) : (
               <>
                 <div className={styles.textContent}>
-                  <h3>{todo.title}</h3>
-                  <p>{todo.description}</p>
-                  <p className={styles.status}>Status: <span>{todo.stat}</span></p>
+                  <h3>{task.title}</h3>
+                  <p>{task.description}</p>
+                  <p className={styles.status}>Status: <span>{task.stat}</span></p>
                 </div>
                 <div className={styles.actions}>
-                  <button onClick={() => handleEdit(todo)} className={styles.editBtn}>Edit</button>
-                  <button onClick={() => onDelete(todo.id)} className={styles.deleteBtn}>Delete</button>
+                  <button onClick={() => handleEdit(task)} className={styles.editBtn}>Edit</button>
+                  <button onClick={() => onDelete(task.id)} className={styles.deleteBtn}>Delete</button>
                 </div>
               </>
             )}

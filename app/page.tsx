@@ -3,45 +3,38 @@ import { useState, useEffect } from "react";
 import TodoList from "./components/list/List";
 import TodoForm from "./components/form/Form"; 
 import { v4 as uuidv4 } from "uuid";
+import { TaskStatus, Task } from "@/app/types/todoInterfaces";
 
-type TodoStatus = "notStarted" | "inProgress" | "completed";
-
-interface Todo {
-  id: string;
-  title: string;
-  description: string;
-  stat: TodoStatus;
-}
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
       const response = await fetch("/api/todos");
       const data = await response.json();
-      setTodos(data);
+      setTasks(data);
     };
     fetchTodos();
   }, []);
 
-  const addTodo = async (todo: { title: string; description: string; stat: TodoStatus }) => {
-    const newTodo: Todo = { id: uuidv4(), ...todo };
+  const addTask = async (task: { title: string; description: string; stat: TaskStatus }) => {
+    const newTodo: Task = { id: uuidv4(), ...task };
     await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTodo),
     });
-    setTodos([...todos, newTodo]);
+    setTasks([...tasks, newTodo]);
   };
 
-  const deleteTodo = async (id: string): Promise<void> => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTask = async (id: string): Promise<void> => {
+    setTasks(tasks.filter((task) => task.id !== id));
     await fetch(`/api/todos/${id}`, { method: "DELETE" });
   };
 
-  const updateTodo = async (updated: Todo): Promise<void> => {
-    setTodos(todos.map((todo) => (todo.id === updated.id ? updated : todo)));
+  const updateTask = async (updated: Task): Promise<void> => {
+    setTasks(tasks.map((task) => (task.id === updated.id ? updated : task)));
     await fetch(`/api/todos/${updated.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -51,12 +44,12 @@ export default function Home() {
 
   return (
     <div>
-      <h1>TODO List</h1>
-      <TodoForm onAddTodo={addTodo} />
+      <h1>Tasks List</h1>
+      <TodoForm onAddTodo={addTask} />
       <TodoList
-        todos={todos}
-        onDelete={deleteTodo}
-        onUpdate={updateTodo}
+        tasks={tasks}
+        onDelete={deleteTask}
+        onUpdate={updateTask}
       />
     </div>
   );

@@ -1,22 +1,24 @@
 "use client";
+
 import { useState } from "react";
-import styles from "./form.module.css"; 
+import styles from "./form.module.css";
+import { TaskStatus, Task } from "@/app/types/todoInterfaces";
 
-export type TodoStatus = "completed" | "inProgress" | "notStarted";
-
-interface TodoFormProps {
-  onAddTodo: (todo: { title: string; description: string; stat: TodoStatus }) => void;
+interface TaskFormProps {
+  onAddTodo: (task: Omit<Task, "id">) => void;
 }
 
-export default function TodoForm({ onAddTodo }: TodoFormProps) {
+export default function TodoForm({ onAddTodo }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [stat, setStat] = useState<TodoStatus>("notStarted");
+  const [stat, setStat] = useState<TaskStatus>("notStarted");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!title.trim()) return;
+
     onAddTodo({ title, description, stat });
+
     setTitle("");
     setDescription("");
     setStat("notStarted");
@@ -39,7 +41,7 @@ export default function TodoForm({ onAddTodo }: TodoFormProps) {
       />
       <select
         value={stat}
-        onChange={(e) => setStat(e.target.value as TodoStatus)}
+        onChange={(e) => setStat(e.target.value as TaskStatus)}
         className={styles.select}
       >
         <option value="notStarted">Not Started</option>

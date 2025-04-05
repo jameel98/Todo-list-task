@@ -1,24 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-Certainly! Here’s the **complete `README.md`** with all parts combined:
-
----
-
 ### ✅ `README.md`
 
 ```markdown
@@ -87,7 +66,6 @@ Visit `http://localhost:3000` to view the app in your browser.
 |------------------------------------|-------------------------------------|
 | ![Light mode screenshot](light.png) | ![Dark mode screenshot](dark.png)   |
 
-> Replace with your actual screenshots if you'd like to include visuals.
 
 ---
 

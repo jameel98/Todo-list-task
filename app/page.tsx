@@ -43,14 +43,16 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <h1>Tasks List</h1>
-      <TodoForm onAddTodo={addTask} />
-      <TodoList
-        tasks={tasks}
-        onDelete={deleteTask}
-        onUpdate={updateTask}
-      />
-    </div>
+    <main className="min-h-screen bg-background text-foreground p-4 sm:p-8 md:p-12">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl font-bold text-center mb-8 tracking-tight">
+          📋 Your Todo List
+        </h1>
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
+          <TodoForm onAddTodo={addTask} />
+          <TodoList tasks={tasks} onDelete={deleteTask} onUpdate={updateTask} />
+        </div>
+      </div>
+    </main>
   );
 }

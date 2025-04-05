@@ -1,21 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
-import TodoList from "../app/components/todoList";
-import TodoForm from "../app/components/TodoForm"; 
+import TodoList from "./components/list/List";
+import TodoForm from "./components/form/Form"; 
 import { v4 as uuidv4 } from "uuid";
+
+type TodoStatus = "notStarted" | "inProgress" | "completed";
 
 interface Todo {
   id: string;
   title: string;
   description: string;
-  completed: boolean;
+  stat: TodoStatus;
 }
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
-    // Example: Fetch initial todos from an API
     const fetchTodos = async () => {
       const response = await fetch("/api/todos");
       const data = await response.json();
@@ -24,8 +25,8 @@ export default function Home() {
     fetchTodos();
   }, []);
 
-  const addTodo = async (todo: { title: string; description: string }) => {
-    const newTodo: Todo = { id: uuidv4(), ...todo, completed: false };
+  const addTodo = async (todo: { title: string; description: string; stat: TodoStatus }) => {
+    const newTodo: Todo = { id: uuidv4(), ...todo };
     await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,25 +35,29 @@ export default function Home() {
     setTodos([...todos, newTodo]);
   };
 
-  const toggleComplete = async (id: string) => {
-    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
-    await fetch(`/api/todos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: !todos.find((t) => t.id === id)?.completed }),
-    });
+  const deleteTodo = async (id: string): Promise<void> => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+    await fetch(`/api/todos/${id}`, { method: "DELETE" });
   };
 
-  const deleteTodo = async (id: string): Promise<void> => {
-    setTodos(todos.filter((todo: Todo) => todo.id !== id));
-    await fetch(`/api/todos/${id}`, { method: "DELETE" });
+  const updateTodo = async (updated: Todo): Promise<void> => {
+    setTodos(todos.map((todo) => (todo.id === updated.id ? updated : todo)));
+    await fetch(`/api/todos/${updated.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated),
+    });
   };
 
   return (
     <div>
       <h1>TODO List</h1>
       <TodoForm onAddTodo={addTodo} />
-      <TodoList todos={todos} onToggleComplete={toggleComplete} onDelete={deleteTodo} />
+      <TodoList
+        todos={todos}
+        onDelete={deleteTodo}
+        onUpdate={updateTodo}
+      />
     </div>
   );
 }
